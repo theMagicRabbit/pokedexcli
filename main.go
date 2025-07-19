@@ -7,16 +7,16 @@ import (
 	"os"
 )
 
+var commands map[string]cliCommand = map[string]cliCommand {
+	"exit": {
+		name:		"exit",
+		description:	"Exit the program",
+		callback:	commandExit,
+	},
+}
 func main() {
 	prompt := "Pokedex > "
 	scanner := bufio.NewScanner(os.Stdin)
-	commands := map[string]cliCommand {
-		"exit": {
-			name:		"exit",
-			description:	"Exit the program",
-			callback:	commandExit,
-		},
-	}
 	for {
 		fmt.Print(prompt)
 		scanner.Scan()
