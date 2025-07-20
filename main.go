@@ -29,6 +29,10 @@ func commandHelp() error {
 	return nil
 }
 
+func commandMap() error {
+	return nil
+}
+
 func cleanInput(text string) []string {
 	words := strings.Fields(text)
 	return words
@@ -47,6 +51,11 @@ func main() {
 			name:		"help",
 			description:	"Print help",
 			callback:	commandHelp,
+		},
+		"map": {
+			name: 		"map",
+			description:	"Page through locations in Pokemon",
+			callback:	commandMap,
 		},
 	}
 	for {
