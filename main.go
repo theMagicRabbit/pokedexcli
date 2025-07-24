@@ -19,8 +19,15 @@ type cliCommand struct {
 }
 
 type mapLocation struct {
-	name string
-	url  string
+	Name string
+	Url  string
+}
+
+type mapResponse struct {
+	Count 	 int
+	Next	 string
+	Previous string
+	Result  []mapLocation
 }
 
 func commandExit() error {
@@ -48,10 +55,15 @@ func commandMap() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(jsonBody))
 
-	var locations []mapLocation
-	json.Unmarshal(jsonBody, &locations)
-	fmt.Println(locations)
+	var locations mapResponse
+	if err = json.Unmarshal(jsonBody, &locations); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Printf("%+v", locations)
+
 	return nil
 }
 
