@@ -5,6 +5,9 @@ import (
 	"strings"
 	"bufio"
 	"os"
+	"net/http"
+	"encoding/json"
+	"io"
 )
 
 var commands map[string]cliCommand
@@ -13,6 +16,11 @@ type cliCommand struct {
 	name        string
 	description string
 	callback    func() error
+}
+
+type mapLocation struct {
+	name string
+	url  string
 }
 
 func commandExit() error {
@@ -30,6 +38,20 @@ func commandHelp() error {
 }
 
 func commandMap() error {
+	uri := "https://pokeapi.co/api/v2/location-area"
+	res, err := http.Get(uri)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	jsonBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	var locations []mapLocation
+	json.Unmarshal(jsonBody, &locations)
+	fmt.Println(locations)
 	return nil
 }
 
