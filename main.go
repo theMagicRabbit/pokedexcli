@@ -82,6 +82,41 @@ func commandMap(conf *config) error {
 	return nil
 }
 
+func commandMapBack(conf *config) error {
+	if conf == nil {
+		return fmt.Errorf("nil config")
+	}
+	var uri string
+	if conf.MapPreviousUrl != "" {
+		uri = conf.MapPreviousUrl
+	} else {
+		fmt.Println("you're on the first page")
+		return nil
+	}
+	res, err := http.Get(uri)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	jsonBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	var locations mapResponse
+	if err = json.Unmarshal(jsonBody, &locations); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	conf.MapNextUrl = locations.Next
+	conf.MapPreviousUrl = locations.Previous
+	for _, l := range locations.Results {
+		fmt.Println(l.Name)
+	}
+
+	return nil
+}
+
 func cleanInput(text string) []string {
 	words := strings.Fields(text)
 	return words
@@ -106,6 +141,11 @@ func main() {
 			name: 		"map",
 			description:	"Page through locations in Pokemon",
 			callback:	commandMap,
+		},
+		"mapb": {
+			name: 		"mapb",
+			description:	"Go to previous locations page in Pokemon",
+			callback:	commandMapBack,
 		},
 	}
 	for {
