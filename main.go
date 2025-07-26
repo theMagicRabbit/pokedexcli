@@ -27,7 +27,7 @@ type mapResponse struct {
 	Count 	 int
 	Next	 string
 	Previous string
-	Result  []mapLocation
+	Results  []mapLocation
 }
 
 func commandExit() error {
@@ -55,14 +55,15 @@ func commandMap() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(jsonBody))
 
 	var locations mapResponse
 	if err = json.Unmarshal(jsonBody, &locations); err != nil {
 		fmt.Println(err)
 		return err
 	}
-	fmt.Printf("%+v", locations)
+	for _, l := range locations.Results {
+		fmt.Println(l.Name)
+	}
 
 	return nil
 }
