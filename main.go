@@ -49,6 +49,9 @@ func commandHelp(conf *config) error {
 }
 
 func commandMap(conf *config) error {
+	if conf == nil {
+		return fmt.Errorf("nil config")
+	}
 	uri := "https://pokeapi.co/api/v2/location-area"
 	res, err := http.Get(uri)
 	if err != nil {
@@ -65,6 +68,8 @@ func commandMap(conf *config) error {
 		fmt.Println(err)
 		return err
 	}
+	conf.MapNextUrl = locations.Next
+	conf.MapPreviousUrl = locations.Previous
 	for _, l := range locations.Results {
 		fmt.Println(l.Name)
 	}
