@@ -52,7 +52,12 @@ func commandMap(conf *config) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
 	}
-	uri := "https://pokeapi.co/api/v2/location-area"
+	var uri string
+	if conf.MapNextUrl != "" {
+		uri = conf.MapNextUrl
+	} else {
+		uri = "https://pokeapi.co/api/v2/location-area" 
+	}
 	res, err := http.Get(uri)
 	if err != nil {
 		return err
