@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"io"
+	"github.com/theMagicRabbit/pokedexcli/internal"
 )
 
 var commands map[string]cliCommand
