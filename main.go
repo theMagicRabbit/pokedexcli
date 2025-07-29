@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"encoding/json"
 	"io"
+	"time"
+	"os"
 	"github.com/theMagicRabbit/pokedexcli/internal"
 )
 
@@ -125,6 +127,12 @@ func cleanInput(text string) []string {
 
 func main() {
 	prompt := "Pokedex > "
+	interval, intervalOk := time.ParseDuration("10s")
+	if intervalOk != nil {
+		fmt.Printf("invalid interval: %s\n", intervalOk)
+		os.Exit(1)
+	}
+	cache := internal.NewCache(interval)
 	scanner := bufio.NewScanner(os.Stdin)
 	conf := config{}
 	commands = map[string]cliCommand {
