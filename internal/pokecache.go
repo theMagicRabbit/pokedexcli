@@ -23,10 +23,19 @@ func NewCache(interval time.Duration) *Cache {
 	return &cache
 }
 
-func (c *Cache) add(key string, val []byte) {
+func (c *Cache) Add(key string, val []byte) {
 	entry := CacheEntry{
 		val: val,
 		createdAt: time.Now(),
 	}
 	c.cacheMap[key] = entry
+}
+
+func (c *Cache) Get(key string) ([]byte, bool) {
+	var entry CacheEntry
+	exists := false
+	if entry, exists = c.cacheMap[key]; !exists {
+		return nil, false
+	}
+	return entry.val, true
 }
