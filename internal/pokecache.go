@@ -22,3 +22,11 @@ func NewCache(interval time.Duration) *Cache {
 	}
 	return &cache
 }
+
+func (c *Cache) add(key string, val []byte) {
+	entry := CacheEntry{
+		val: val,
+		createdAt: time.Now(),
+	}
+	c.cacheMap[key] = entry
+}

@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"io"
 	"time"
-	"os"
 	"github.com/theMagicRabbit/pokedexcli/internal"
 )
 
