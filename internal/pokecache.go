@@ -24,6 +24,8 @@ func NewCache(interval time.Duration) *Cache {
 }
 
 func (c *Cache) Add(key string, val []byte) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	entry := CacheEntry{
 		val: val,
 		createdAt: time.Now(),
@@ -32,6 +34,8 @@ func (c *Cache) Add(key string, val []byte) {
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	var entry CacheEntry
 	exists := false
 	if entry, exists = c.cacheMap[key]; !exists {
