@@ -132,6 +132,7 @@ func main() {
 		os.Exit(1)
 	}
 	cache := internal.NewCache(interval)
+	fmt.Println(cache)
 	scanner := bufio.NewScanner(os.Stdin)
 	conf := config{}
 	commands = map[string]cliCommand {
