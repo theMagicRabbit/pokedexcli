@@ -18,6 +18,7 @@ type CacheEntry struct {
 
 func NewCache(interval time.Duration) *Cache {
 	cache := Cache{
+		cacheMap: map[string]CacheEntry{},
 		interval: interval,
 	}
 	go cache.reapLoop()
