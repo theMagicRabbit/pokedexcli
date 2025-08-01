@@ -34,6 +34,7 @@ type mapResponse struct {
 
 type config struct {
 	MapNextUrl, MapPreviousUrl string
+	CacheApi *internal.Cache
 }
 
 func commandExit(conf *config) error {
@@ -50,6 +51,24 @@ func commandHelp(conf *config) error {
 	return nil
 }
 
+func cacheAwareGet(uri string, conf *config) ([]byte, error) {
+	var jsonBody []byte
+	jsonBody, exists := conf.CacheApi.Get(uri)
+	if !exists {
+		res, err := http.Get(uri)
+		if err != nil {
+			return nil, err
+		}
+		defer res.Body.Close()
+		jsonBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		conf.CacheApi.Add(uri, jsonBody)
+	}
+	return jsonBody, nil
+}
+
 func commandMap(conf *config) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
@@ -60,12 +79,7 @@ func commandMap(conf *config) error {
 	} else {
 		uri = "https://pokeapi.co/api/v2/location-area" 
 	}
-	res, err := http.Get(uri)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	jsonBody, err := io.ReadAll(res.Body)
+	jsonBody, err := cacheAwareGet(uri, conf)
 	if err != nil {
 		return err
 	}
@@ -95,12 +109,7 @@ func commandMapBack(conf *config) error {
 		fmt.Println("you're on the first page")
 		return nil
 	}
-	res, err := http.Get(uri)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	jsonBody, err := io.ReadAll(res.Body)
+	jsonBody, err := cacheAwareGet(uri, conf)
 	if err != nil {
 		return err
 	}
@@ -134,7 +143,9 @@ func main() {
 	cache := internal.NewCache(interval)
 	fmt.Println(cache)
 	scanner := bufio.NewScanner(os.Stdin)
-	conf := config{}
+	conf := config{
+		CacheApi: cache,
+	}
 	commands = map[string]cliCommand {
 		"exit": {
 			name:		"exit",
