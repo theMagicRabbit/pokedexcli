@@ -128,6 +128,10 @@ func commandMapBack(conf *config) error {
 	return nil
 }
 
+func commandExplore(conf *config) error {
+	return nil
+}
+
 func cleanInput(text string) []string {
 	words := strings.Fields(text)
 	return words
@@ -166,6 +170,11 @@ func main() {
 			description:	"Go to previous locations page in Pokemon",
 			callback:	commandMapBack,
 		},
+		"explore": {
+			name: 		"explore",
+			description:	"Explore an area",
+			callback:	commandExplore,
+		},
 	}
 	for {
 		fmt.Print(prompt)
@@ -174,7 +183,10 @@ func main() {
 		cleanedInput := cleanInput(input)
 		cmd, ok := commands[cleanedInput[0]]
 		if ok {
-			cmd.callback(&conf)
+			err := cmd.callback(&conf)
+			if err != nil {
+				fmt.Printf("%s encountered error: %s\n", cmd.name, err)
+			}
 		} else {
 			fmt.Println("Unknown command")
 		}
