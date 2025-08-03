@@ -60,7 +60,7 @@ func cacheAwareGet(uri string, conf *config) ([]byte, error) {
 			return nil, err
 		}
 		defer res.Body.Close()
-		jsonBody, err := io.ReadAll(res.Body)
+		jsonBody, err = io.ReadAll(res.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -86,7 +86,7 @@ func commandMap(conf *config) error {
 
 	var locations mapResponse
 	if err = json.Unmarshal(jsonBody, &locations); err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error unmarshaling json: %s\n", string(jsonBody))
 		return err
 	}
 	conf.MapNextUrl = locations.Next
@@ -141,7 +141,6 @@ func main() {
 		os.Exit(1)
 	}
 	cache := internal.NewCache(interval)
-	fmt.Println(cache)
 	scanner := bufio.NewScanner(os.Stdin)
 	conf := config{
 		CacheApi: cache,
