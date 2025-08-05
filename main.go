@@ -37,6 +37,59 @@ type config struct {
 	CacheApi *internal.Cache
 }
 
+type encounterResponse struct {
+	EncounterMethodRates []struct {
+		EncounterMethod struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"encounter_method"`
+		VersionDetails []struct {
+			Rate    int `json:"rate"`
+			Version struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"version"`
+		} `json:"version_details"`
+	} `json:"encounter_method_rates"`
+	GameIndex int `json:"game_index"`
+	ID        int `json:"id"`
+	Location  struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"location"`
+	Name  string `json:"name"`
+	Names []struct {
+		Language struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		Name string `json:"name"`
+	} `json:"names"`
+	PokemonEncounters []struct {
+		Pokemon struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"pokemon"`
+		VersionDetails []struct {
+			EncounterDetails []struct {
+				Chance          int           `json:"chance"`
+				ConditionValues []interface{} `json:"condition_values"`
+				MaxLevel        int           `json:"max_level"`
+				Method          struct {
+					Name string `json:"name"`
+					URL  string `json:"url"`
+				} `json:"method"`
+				MinLevel int `json:"min_level"`
+			} `json:"encounter_details"`
+			MaxChance int `json:"max_chance"`
+			Version   struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"version"`
+		} `json:"version_details"`
+	} `json:"pokemon_encounters"`
+}
+
 func commandExit(conf *config, args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
@@ -129,6 +182,25 @@ func commandMapBack(conf *config, args []string) error {
 }
 
 func commandExplore(conf *config, args []string) error {
+	if conf == nil {
+		return fmt.Errorf("nil config")
+	}
+		
+	uri := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%s", args[0])
+	jsonBody, err := cacheAwareGet(uri, conf)
+	if err != nil {
+		return err
+	}
+
+	var encounters encounterResponse
+	if err = json.Unmarshal(jsonBody, &encounters); err != nil {
+		fmt.Printf("Error unmarshaling json: %s\n", string(jsonBody))
+		return err
+	}
+	for _, pokemon := range encounters.PokemonEncounters {
+		fmt.Println(pokemon.Pokemon.Name)
+	}
+
 	return nil
 }
 
