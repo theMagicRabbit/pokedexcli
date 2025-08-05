@@ -185,7 +185,9 @@ func commandExplore(conf *config, args []string) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
 	}
-		
+	if len(args) < 1 {
+		return fmt.Errorf("Must provide area name to explore")
+	}
 	uri := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%s", args[0])
 	jsonBody, err := cacheAwareGet(uri, conf)
 	if err != nil {
@@ -261,7 +263,7 @@ func main() {
 		if ok {
 			err := cmd.callback(&conf, args)
 			if err != nil {
-				fmt.Printf("%s encountered error: %s\n", cmd.name, err)
+				fmt.Printf("%s error: %s\n", cmd.name, err)
 			}
 		} else {
 			fmt.Println("Unknown command")
