@@ -17,7 +17,7 @@ var commands map[string]cliCommand
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, []string) error
 }
 
 type mapLocation struct {
@@ -37,13 +37,13 @@ type config struct {
 	CacheApi *internal.Cache
 }
 
-func commandExit(conf *config) error {
+func commandExit(conf *config, args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(conf *config) error {
+func commandHelp(conf *config, args []string) error {
 	fmt.Printf("Welcome to the Pokedex!\nUsage:\n\n")
 	for k, v := range commands {
 		fmt.Printf("%s: %s\n", k, v.description)
@@ -69,7 +69,7 @@ func cacheAwareGet(uri string, conf *config) ([]byte, error) {
 	return jsonBody, nil
 }
 
-func commandMap(conf *config) error {
+func commandMap(conf *config, args []string) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
 	}
@@ -98,7 +98,7 @@ func commandMap(conf *config) error {
 	return nil
 }
 
-func commandMapBack(conf *config) error {
+func commandMapBack(conf *config, args []string) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
 	}
@@ -128,7 +128,7 @@ func commandMapBack(conf *config) error {
 	return nil
 }
 
-func commandExplore(conf *config) error {
+func commandExplore(conf *config, args []string) error {
 	return nil
 }
 
@@ -181,9 +181,13 @@ func main() {
 		scanner.Scan()
 		input := scanner.Text()
 		cleanedInput := cleanInput(input)
+		var args []string
+		if len(cleanedInput) > 1 {
+			args = cleanedInput[1:]
+		}
 		cmd, ok := commands[cleanedInput[0]]
 		if ok {
-			err := cmd.callback(&conf)
+			err := cmd.callback(&conf, args)
 			if err != nil {
 				fmt.Printf("%s encountered error: %s\n", cmd.name, err)
 			}
