@@ -198,6 +198,7 @@ func commandExplore(conf *config, args []string) error {
 	if err = json.Unmarshal(jsonBody, &encounters); err != nil {
 		return err
 	}
+	fmt.Println("Found Pokemon:")
 	for _, pokemon := range encounters.PokemonEncounters {
 		fmt.Println(pokemon.Pokemon.Name)
 	}
