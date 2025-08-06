@@ -196,7 +196,6 @@ func commandExplore(conf *config, args []string) error {
 
 	var encounters encounterResponse
 	if err = json.Unmarshal(jsonBody, &encounters); err != nil {
-		fmt.Printf("Error unmarshaling json: %s\n", string(jsonBody))
 		return err
 	}
 	for _, pokemon := range encounters.PokemonEncounters {
