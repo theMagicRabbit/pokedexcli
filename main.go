@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"os"
 	"net/http"
+	"math/rand"
 	"encoding/json"
 	"io"
 	"time"
@@ -105,7 +106,14 @@ func commandCatch(conf *config, args []string) error {
 		return err
 	}
 	fmt.Printf("Throwing Pokeball at %s...\n", args[0])
-	fmt.Println(pokemon.BaseExperience)
+	targetScore := rand.Int() % 10
+	pokeScore := rand.Int() % pokemon.BaseExperience
+	fmt.Println(targetScore, pokeScore)
+	if pokeScore <= targetScore {
+		fmt.Printf("caught %s!\n", args[0])
+	} else {
+		fmt.Printf("%s escaped!\n", args[0])
+	}
 	return nil
 }
 
@@ -280,10 +288,15 @@ func main() {
 		input := scanner.Text()
 		cleanedInput := cleanInput(input)
 		var args []string
+		var ok bool = true
+		cmd := commands["help"]
+		if len(cleanedInput) != 0 {
+			fmt.Println(cleanedInput[0])
+			cmd, ok = commands[cleanedInput[0]]
+		}	
 		if len(cleanedInput) > 1 {
 			args = cleanedInput[1:]
 		}
-		cmd, ok := commands[cleanedInput[0]]
 		if ok {
 			err := cmd.callback(&conf, args)
 			if err != nil {
