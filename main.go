@@ -90,6 +90,25 @@ type encounterResponse struct {
 	} `json:"pokemon_encounters"`
 }
 
+func commandCatch(conf *config, args []string) error {
+	if len(args) < 1 {
+		return fmt.Errorf("Must provide a Pokemon to catch")
+	}
+	baseUri := "https://pokeapi.co/api/v2/pokemon"
+	jsonBytes, err := cacheAwareGet(fmt.Sprintf("%s/%s", baseUri, args[0]), conf)
+	if err != nil {
+		return err
+	}
+	var pokemon internal.PokemonResponse
+	err = json.Unmarshal(jsonBytes, &pokemon)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Throwing Pokeball at %s...\n", args[0])
+	fmt.Println(pokemon.BaseExperience)
+	return nil
+}
+
 func commandExit(conf *config, args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
@@ -224,6 +243,11 @@ func main() {
 		CacheApi: cache,
 	}
 	commands = map[string]cliCommand {
+		"catch": {
+			name:		"catch",
+			description:	"Yeet a pokeball at a Pokemon",
+			callback:	commandCatch,
+		},
 		"exit": {
 			name:		"exit",
 			description:	"Exit the program",
