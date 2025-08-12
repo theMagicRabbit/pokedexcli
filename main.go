@@ -36,6 +36,7 @@ type mapResponse struct {
 type config struct {
 	MapNextUrl, MapPreviousUrl string
 	CacheApi *internal.Cache
+	Pokedex map[string]internal.PokemonResponse
 }
 
 type encounterResponse struct {
@@ -108,10 +109,11 @@ func commandCatch(conf *config, args []string) error {
 	fmt.Printf("Throwing Pokeball at %s...\n", args[0])
 	targetScore := rand.Int() % (pokemon.BaseExperience / 2)
 	pokeScore := rand.Int() % pokemon.BaseExperience
-	fmt.Println(targetScore, pokeScore)
 	if pokeScore <= targetScore {
+		pokedex := conf.Pokedex
+		pokedex[args[0]] = pokemon
 		fmt.Printf("caught %s!\n", args[0])
-	} else {
+	} else { 
 		fmt.Printf("%s escaped!\n", args[0])
 	}
 	return nil
@@ -249,6 +251,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	conf := config{
 		CacheApi: cache,
+		Pokedex: make(map[string]internal.PokemonResponse),
 	}
 	commands = map[string]cliCommand {
 		"catch": {
@@ -291,7 +294,6 @@ func main() {
 		var ok bool = true
 		cmd := commands["help"]
 		if len(cleanedInput) != 0 {
-			fmt.Println(cleanedInput[0])
 			cmd, ok = commands[cleanedInput[0]]
 		}	
 		if len(cleanedInput) > 1 {
