@@ -106,7 +106,7 @@ func commandCatch(conf *config, args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Throwing Pokeball at %s...\n", args[0])
+	fmt.Printf("Throwing a Pokeball at %s...\n", args[0])
 	targetScore := rand.Int() % (pokemon.BaseExperience / 2)
 	pokeScore := rand.Int() % pokemon.BaseExperience
 	if pokeScore <= targetScore {
