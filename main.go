@@ -229,6 +229,18 @@ func commandMapBack(conf *config, args []string) error {
 	return nil
 }
 
+func commandPokedex(conf *config, args []string) error {
+	if len(conf.Pokedex) == 0 {
+		fmt.Println("You haven't caught any Pokemon yet.")
+		return nil
+	}
+	fmt.Println("Your Pokedex:")
+	for key, _ := range conf.Pokedex {
+		fmt.Printf("  - %s\n", key)
+	}
+	return nil
+}
+
 func commandExplore(conf *config, args []string) error {
 	if conf == nil {
 		return fmt.Errorf("nil config")
@@ -302,6 +314,11 @@ func main() {
 			name: 		"mapb",
 			description:	"Go to previous locations page in Pokemon",
 			callback:	commandMapBack,
+		},
+		"pokedex": {
+			name:		"pokedex",
+			description:	"Print all caught Pokemon",
+			callback:	commandPokedex,
 		},
 		"explore": {
 			name: 		"explore",
