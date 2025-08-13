@@ -133,6 +133,25 @@ func commandHelp(conf *config, args []string) error {
 	return nil
 }
 
+func commandInspect(conf *config, args []string) error {
+	pokemon, ok := conf.Pokedex[args[0]]
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+	fstring := "Name: %s\nHeight: %d\nWeight: %d\nStats:\n%sTypes:\n%s"
+	var stats string
+	var types string
+	for _, s := range pokemon.Stats {
+		stats += fmt.Sprintf("  - %s: %d\n", s.Stat.Name, s.BaseStat)
+	}
+	for _, t := range pokemon.Types {
+		types += fmt.Sprintf("  - %s\n", t.Type.Name)
+	}
+	fmt.Printf(fstring, pokemon.Name, pokemon.Height, pokemon.Weight, stats, types)
+	return nil
+}
+
 func cacheAwareGet(uri string, conf *config) ([]byte, error) {
 	var jsonBody []byte
 	jsonBody, exists := conf.CacheApi.Get(uri)
@@ -268,6 +287,11 @@ func main() {
 			name:		"help",
 			description:	"Print help",
 			callback:	commandHelp,
+		},
+		"inspect": {
+			name:		"inspect",
+			description:	"Inspect a pokemon in your inventory",
+			callback:	commandInspect,
 		},
 		"map": {
 			name: 		"map",
